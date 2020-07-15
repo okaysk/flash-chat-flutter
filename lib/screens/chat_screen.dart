@@ -25,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final user = await _auth.currentUser();
       if (user != null) {
         loggedInUser = user;
-        print(loggedInUser.email);
+        // print(loggedInUser.email);
       }
     } catch (e) {}
   }
@@ -39,6 +39,9 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
+                _auth.signOut();
+                Navigator.pop(context);
+                // 만약 register -> Close하면 다시 register로 돌아감? 로그인 화면으로 돌아가야되니까 잘못된거 같은ㄷ.
                 //Implement logout functionality
               }),
         ],
