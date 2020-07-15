@@ -12,6 +12,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
   AnimationController controller;
+  Animation animation;
 
   @override
   void initState() {
@@ -20,16 +21,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     controller = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this, //this class의 State, object에 영향을 준다는 의민가.
-      upperBound: 100.0,
+      // upperBound: 100.0,
     );
+
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
+    // this curve 0 ~ 1. (upper bound limited to 1)
 
     // proceed our animation forwards. will animation 0 to 1 in 60 steps.
     controller.forward();
+    // controller.reverse(from: 1.0);
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse(from: 1.0);
+      } else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+      // print(status);
+    });
 
     controller.addListener(() {
       setState(() {});
-      print(controller.value);
+      // print(controller.value);
+      print(animation.value);
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,14 +70,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                   tag: 'logo',
                   child: Container(
                     child: Image.asset('images/logo.png'),
-                    height: 60.0,
+                    // height: 60.0,
+                    height: animation.value * 100,
                   ),
                 ),
                 Text(
-                  'Flash Chat ${controller.value.toInt()}%',
-                  // '${controller.value.toInt()}%',
+                  // 'Flash Chat ${controller.value.toInt()}%',
+                  'Flash Chat',
                   style: TextStyle(
-                    fontSize: 25.0,
+                    fontSize: 30.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
