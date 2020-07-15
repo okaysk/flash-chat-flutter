@@ -10,10 +10,32 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this, //this class의 State, object에 영향을 준다는 의민가.
+      upperBound: 100.0,
+    );
+
+    // proceed our animation forwards. will animation 0 to 1 in 60 steps.
+    controller.forward();
+
+    controller.addListener(() {
+      setState(() {});
+      print(controller.value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.red.withOpacity(controller.value),
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -31,9 +53,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
                 Text(
-                  'Flash Chat',
+                  'Flash Chat ${controller.value.toInt()}%',
+                  // '${controller.value.toInt()}%',
                   style: TextStyle(
-                    fontSize: 45.0,
+                    fontSize: 25.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
