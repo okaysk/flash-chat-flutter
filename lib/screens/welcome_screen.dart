@@ -24,21 +24,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
       // upperBound: 100.0,
     );
 
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
-    // this curve 0 ~ 1. (upper bound limited to 1)
+    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white).animate(controller);
 
     // proceed our animation forwards. will animation 0 to 1 in 60 steps.
     controller.forward();
-    // controller.reverse(from: 1.0);
-
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.reverse(from: 1.0);
-      } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-      // print(status);
-    });
 
     controller.addListener(() {
       setState(() {});
@@ -57,7 +46,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.red.withOpacity(controller.value),
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
+      backgroundColor: animation.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -70,8 +60,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                   tag: 'logo',
                   child: Container(
                     child: Image.asset('images/logo.png'),
-                    // height: 60.0,
-                    height: animation.value * 100,
+                    height: 60.0,
+                    // height: animation.value * 100,
                   ),
                 ),
                 Text(
