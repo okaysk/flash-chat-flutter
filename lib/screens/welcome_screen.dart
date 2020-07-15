@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
       // upperBound: 100.0,
     );
 
-    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white).animate(controller);
+    // animation = ColorTween(begin: Colors.blueGrey, end: Colors.white).animate(controller);
 
     // proceed our animation forwards. will animation 0 to 1 in 60 frames.(default)
     controller.forward();
@@ -49,8 +49,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.red.withOpacity(controller.value),
-      // backgroundColor: Colors.white,
-      backgroundColor: animation.value,
+      backgroundColor: Colors.white,
+      // backgroundColor: animation.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -71,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                   width: 250.0,
                   child: TextLiquidFill(
                     // 'Flash Chat ${controller.value.toInt()}%',
-                    text: 'Flash Chat',
+                    text: 'SK Chat',
                     waveColor: Colors.blueAccent,
                     boxBackgroundColor: Colors.white,
                     textStyle: TextStyle(
