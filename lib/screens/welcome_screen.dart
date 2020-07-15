@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 import 'login_screen.dart';
 import 'registration_screen.dart';
@@ -64,12 +65,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                     // height: animation.value * 100,
                   ),
                 ),
-                Text(
-                  // 'Flash Chat ${controller.value.toInt()}%',
-                  'Flash Chat',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.w900,
+                SizedBox(
+                  width: 250.0,
+                  child: TextLiquidFill(
+                    // 'Flash Chat ${controller.value.toInt()}%',
+                    text: 'Flash Chat',
+                    waveColor: Colors.blueAccent,
+                    boxBackgroundColor: Colors.white,
+                    textStyle: TextStyle(
+                      fontSize: 40.0,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
               ],
