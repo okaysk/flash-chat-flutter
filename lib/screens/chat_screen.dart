@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,8 +11,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final _firestore = Firestore.instance;
   final _auth = FirebaseAuth.instance;
   FirebaseUser loggedInUser;
+  String messageText;
 
   @override
   void initState() {
@@ -30,6 +33,22 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {}
   }
 
+  // void getMessages() async {
+  //   final messages = await _firestore.collection('messages').getDocuments();
+  //   for (var message in messages.documents) {
+  //     print(message.data);
+  //   }
+  // }
+
+  void messagesStream() async {
+    // listner처럼 실행됨. snapshots()가.
+    await for (var snapshot in _firestore.collection('messages').snapshots()) {
+      for (var message in snapshot.documents) {
+        print(message.data);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +58,10 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
-                _auth.signOut();
-                Navigator.pop(context);
+                // getMessages();
+                messagesStream();
+                // _auth.signOut();
+                // Navigator.pop(context);
                 // 만약 register -> Close하면 다시 register로 돌아감? 로그인 화면으로 돌아가야되니까 잘못된거 같은ㄷ.
                 //Implement logout functionality
               }),
@@ -61,6 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Expanded(
                     child: TextField(
                       onChanged: (value) {
+                        messageText = value;
                         //Do something with the user input.
                       },
                       decoration: kMessageTextFieldDecoration,
@@ -68,7 +90,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   FlatButton(
                     onPressed: () {
-                      //Implement send functionality.
+                      //messageText + loggedInUer.email
+                      _firestore.collection('messages').add({
+                        'text': messageText,
+                        'sender': loggedInUser.email,
+                      });
                     },
                     child: Text(
                       'Send',
