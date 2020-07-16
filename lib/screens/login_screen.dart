@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat/constants.dart';
+import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -80,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
                     if (user != null) {
                       Navigator.pushNamed(context, ChatScreen.id);
+                      // Navigator.pushNamedAndRemoveUntil(context, ChatScreen.id, (route) => route.settings.name == WelcomeScreen.id);
                     }
                     setState(() {
                       showSpinner = false;

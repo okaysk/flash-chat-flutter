@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,17 +36,30 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {}
   }
 
+  bool test(Route<dynamic> route) {
+    // print(route.settings.name);
+    // print(route.isFirst);
+    return route.settings.name == WelcomeScreen.id;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // automaticallyImplyLeading: false, // hide back button
         leading: null,
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
                 _auth.signOut();
+                // Navigator.pushNamedAndRemoveUntil(context, ChatScreen.id, (Route<dynamic> route) => route.settings.name == WelcomeScreen.id);
+                // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+                // Navigator.popUntil(context, (route) => route.settings.name == WelcomeScreen.id);
+                // Navigator.popUntil(context, test);
                 Navigator.pop(context);
+                // Navigator.popUntil(context, (route) => test(route));
+
                 // 만약 register -> Close하면 다시 register로 돌아감? 로그인 화면으로 돌아가야되니까 잘못된거 같은ㄷ.
                 //Implement logout functionality
               }),
@@ -81,6 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
+                        'timestamp': FieldValue.serverTimestamp(), // for order
                       });
                     },
                     child: Text(
@@ -102,7 +117,7 @@ class Messagestream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').snapshots(),
+      stream: _firestore.collection('messages').orderBy('timestamp').snapshots(), // for order
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
