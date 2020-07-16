@@ -110,7 +110,7 @@ class Messagestream extends StatelessWidget {
             backgroundColor: Colors.lightBlueAccent,
           ));
         }
-        final messages = snapshot.data.documents; // .reversed; //reversed
+        final messages = snapshot.data.documents.reversed; // .reversed; //reversed
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
           final messageText = message.data['text'];

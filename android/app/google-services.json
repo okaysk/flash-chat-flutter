@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "191912589678",
+    "firebase_url": "https://sk-chat-53b86.firebaseio.com",
+    "project_id": "sk-chat-53b86",
+    "storage_bucket": "sk-chat-53b86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191912589678:android:21b8195af4f5212b70a97f",
+        "android_client_info": {
+          "package_name": "co.sk.flashChat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "191912589678-dhvpp0tdoh5v9lr84qdi3nkp0h7o4q3j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgS2GCI_Wr8cE63eEVC6HwtruW9ym8T3E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191912589678-dhvpp0tdoh5v9lr84qdi3nkp0h7o4q3j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "191912589678-riuf7cmq5l6emqf7j6ne7lrfa09hdm3t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.sk.flashChat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
