@@ -17,6 +17,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
   String email, password;
+  String userName, phoneNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: Hero(
                   tag: 'logo',
                   child: Container(
-                    height: 200.0,
+                    height: 100.0,
                     child: Image.asset('images/logo.png'),
                   ),
                 ),
@@ -67,7 +68,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ),
               SizedBox(
-                height: 24.0,
+                height: 8.0,
+              ),
+              TextField(
+                keyboardType: TextInputType.text,
+                textAlign: TextAlign.start,
+                onChanged: (value) {
+                  userName = value;
+                },
+                decoration: kTextFieldDecoration.copyWith(
+                  hintText: 'Enter your userName',
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                keyboardType: TextInputType.phone,
+                textAlign: TextAlign.start,
+                onChanged: (value) {
+                  phoneNumber = value;
+                },
+                decoration: kTextFieldDecoration.copyWith(
+                  hintText: 'Enter your phoneNumber',
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
               ),
               RoundedButton(
                 title: 'Register',
