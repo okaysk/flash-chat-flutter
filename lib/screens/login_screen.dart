@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'chat_screen.dart';
+import 'tap_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -80,7 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   try {
                     final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
                     if (user != null) {
-                      Navigator.pushNamed(context, ChatScreen.id);
+                      // Navigator.pushNamed(context, ChatScreen.id);
+                      Navigator.pushNamed(context, TapScreen.id);
                       // Navigator.pushNamedAndRemoveUntil(context, ChatScreen.id, (route) => route.settings.name == WelcomeScreen.id);
                     }
                     setState(() {

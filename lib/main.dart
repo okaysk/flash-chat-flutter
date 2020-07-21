@@ -8,6 +8,7 @@ import 'screens/chat_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/tap_screen.dart';
 
 void main() => runApp(FlashChat());
 
@@ -22,6 +23,7 @@ class FlashChat extends StatelessWidget {
           LoginScreen.id: (context) => LoginScreen(),
           RegistrationScreen.id: (context) => RegistrationScreen(),
           ChatScreen.id: (context) => ChatScreen(),
+          TapScreen.id: (context) => TapScreen(),
         });
   }
 }

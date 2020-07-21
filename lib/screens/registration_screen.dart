@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
+import 'package:flash_chat/screens/tap_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +17,8 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
+  final _firestore = Firestore.instance;
+
   bool showSpinner = false;
   String email, password;
   String userName, phoneNumber;
@@ -107,12 +111,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     // behind the method is Future<> type. That's asynchronous method.
                     final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
                     if (newUser != null) {
-                      Navigator.pushNamedAndRemoveUntil(context, ChatScreen.id, (Route<dynamic> route) => route.settings.name == WelcomeScreen.id);
+                      Navigator.pushNamedAndRemoveUntil(context, TapScreen.id, (Route<dynamic> route) => route.settings.name == WelcomeScreen.id);
                       // Navigator.pushNamed(context, ChatScreen.id);
                     }
-
                     setState(() {
                       showSpinner = false;
+                    });
+                    _firestore.collection('users').add({
+                      'email': email,
+                      'userName': userName,
+                      'phoneNumber': phoneNumber,
                     });
                   } catch (e) {}
                 },
