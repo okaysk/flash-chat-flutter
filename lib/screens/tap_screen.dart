@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'chat_screen.dart';
 import 'package:flash_chat/screens/friends_screen.dart';
 
 class TapScreen extends StatelessWidget {
-  static const String id = 'room_screen';
+  static const String id = 'tap_screen';
 
   @override
   Widget build(BuildContext context) {

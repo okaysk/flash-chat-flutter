@@ -17,6 +17,7 @@ class FlashChat extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         // home: WelcomeScreen(),
+        debugShowCheckedModeBanner: false,
         initialRoute: WelcomeScreen.id,
         routes: {
           WelcomeScreen.id: (context) => WelcomeScreen(),
