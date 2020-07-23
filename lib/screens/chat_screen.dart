@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/Model/user_data.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
@@ -9,6 +11,12 @@ FirebaseUser loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
+  final UserData opponentUserData;
+
+  const ChatScreen({
+    Key key,
+    this.opponentUserData,
+  }) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -17,13 +25,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+
   String messageText;
+  String chatRoomId;
 
   @override
   void initState() {
     super.initState();
-
     getCurrenUser();
+    chatRoomId = UserProvider.instance.createRoomNum(widget.opponentUserData, UserProvider.instance.userData);
   }
 
   void getCurrenUser() async {
@@ -58,13 +68,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 // Navigator.popUntil(context, (route) => route.settings.name == WelcomeScreen.id);
                 // Navigator.popUntil(context, test);
                 Navigator.pop(context);
-                // Navigator.popUntil(context, (route) => test(route));
-
-                // 만약 register -> Close하면 다시 register로 돌아감? 로그인 화면으로 돌아가야되니까 잘못된거 같은ㄷ.
-                //Implement logout functionality
               }),
         ],
-        title: Text('⚡️Chat'),
+        title: Text('⚡️Chat ${widget.opponentUserData.email}'), //${widget.email}
         backgroundColor: Colors.lightBlueAccent,
       ),
       body: SafeArea(
@@ -72,7 +78,11 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Messagestream(),
+            Messagestream(
+              email: widget.opponentUserData.email,
+              userName: widget.opponentUserData.userName,
+              chatRoomId: chatRoomId,
+            ),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -95,7 +105,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
+                        'receiver': widget.opponentUserData.email,
                         'timestamp': FieldValue.serverTimestamp(), // for order
+                        'chatRoomId': chatRoomId,
                       });
                     },
                     child: Text(
@@ -114,31 +126,72 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class Messagestream extends StatelessWidget {
+  final String email, userName;
+  final String chatRoomId;
+
+  Messagestream({
+    this.email,
+    this.userName,
+    this.chatRoomId,
+  });
+
   @override
   Widget build(BuildContext context) {
+    // Stream<QuerySnapshot> stream2 = _firestore.collection('messages').orderBy('timestamp').snapshots();
+    // Stream<QuerySnapshot> stream3 = _firestore.collection('messages').orderBy('timestamp').snapshots();
+    // Stream<QuerySnapshot> stream4 = stream2 + stream3;
+
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').orderBy('timestamp').snapshots(), // for order
+      // stream: _firestore.collection('messages').orderBy('timestamp').snapshots(), // for order
+      // stream: _firestore.collection('messages').where("sender", isEqualTo: userName).orderBy('timestamp').snapshots(),
+      // stream: _firestore.collection('messages').where("sender", isEqualTo: email).where("receiver", isEqualTo: loggedInUser.email).orderBy('timestamp').snapshots(),
+      // stream: stream4,
+      stream: _firestore.collection('messages').where("chatRoomId", isEqualTo: chatRoomId).orderBy('timestamp').snapshots(),
+      // stream: _firestore.collection('messages').where("receiver", isEqualTo: email).orderBy('timestamp').snapshots(),
+
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
+          print('No data!!');
+          print(snapshot.data);
           return Center(
-              child: CircularProgressIndicator(
-            backgroundColor: Colors.lightBlueAccent,
-          ));
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.lightBlueAccent,
+            ),
+          );
+          // return Expanded(
+          //   child: ListView(
+          //     reverse: true,
+          //     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+          //     // children: messageBubbles,
+          //   ),
+          // );
         }
-        final messages = snapshot.data.documents.reversed; // .reversed; //reversed
+        print('Yes data');
+        // print(snapshot.data.documents.first.documentID);
+
+        final messages = snapshot.data.documents.reversed;
+        // print(messages.first.documentID);
+        // final senderMessages = snapshot.data.documents.wher
+        // snapshot.data.documents.retainWhere((sender) => sender == loggedInUser.email);
+        // final receiverMessages = snapshot.data.documents;
+        // print(senderMessages);
+
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
-          final messageText = message.data['text'];
-          final messageSender = message.data['sender'];
+          if (message.data['sender'] == email || message.data['receiver'] == email) {
+            print('sender: ${message.data['sender']}, receiver: ${message.data['receiver']}');
+            print('This is ID!!! ${message.documentID}');
+            final messageText = message.data['text'];
+            final messageSender = message.data['sender'];
+            final currentUser = loggedInUser.email;
 
-          final currentUser = loggedInUser.email;
-
-          final messageBubble = MessageBubble(
-            sender: messageSender,
-            text: messageText,
-            isMe: currentUser == messageSender,
-          );
-          messageBubbles.add(messageBubble);
+            final messageBubble = MessageBubble(
+              sender: messageSender,
+              text: messageText,
+              isMe: currentUser == messageSender,
+            );
+            messageBubbles.add(messageBubble);
+          }
         }
         return Expanded(
           child: ListView(
