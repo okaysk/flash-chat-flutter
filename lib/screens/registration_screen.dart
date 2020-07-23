@@ -122,6 +122,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       'userName': userName,
                       'phoneNumber': phoneNumber,
                     });
+                    //  _firestore.collection('users').document(newUser.user.uid).setData({
+                    //   'email': email,
+                    //   'userName': userName,
+                    //   'phoneNumber': phoneNumber,
+                    // });
                   } catch (e) {}
                 },
               ),

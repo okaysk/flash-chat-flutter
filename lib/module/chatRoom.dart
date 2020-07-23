@@ -1,9 +1,16 @@
+import 'package:flash_chat/Model/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
 
 class ChatRoom extends StatelessWidget {
-  final String userName, lastMessage, timeStamp, email;
-  ChatRoom({this.lastMessage, this.timeStamp, this.userName, this.email});
+  final String lastMessage, timeStamp;
+  final UserData userData;
+
+  ChatRoom({
+    this.lastMessage,
+    this.timeStamp,
+    this.userData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,11 @@ class ChatRoom extends StatelessWidget {
 
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatScreen(userName: userName, email: email)),
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  opponentUserData: userData,
+                ),
+              ),
             );
           },
           child: Padding(
@@ -32,7 +43,7 @@ class ChatRoom extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    '$userName',
+                    '${userData.userName}',
                     // textAlign: TextAlign.center,
                     // textDirection: TextDirection.ltr,
                     style: TextStyle(

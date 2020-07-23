@@ -1,6 +1,8 @@
 // import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/Model/user_data.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:flash_chat/screens/registration_screen.dart';
@@ -13,7 +15,7 @@ class Friends extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         // child: SingleChildScrollView( // ListView에서 이미 적용중.
-        child: StreamBuilder(
+        child: StreamBuilder<QuerySnapshot>(
           stream: _firestore.collection('users').orderBy('userName').snapshots(), // for order
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -23,22 +25,7 @@ class Friends extends StatelessWidget {
               ));
             }
 
-            final users = snapshot.data.documents;
-            List<UserProfile> userProfiles = [];
-            for (var user in users) {
-              // print(user);
-              print(user['id']);
-              final email = user['email'];
-              final userName = user['userName'];
-              final phoneNumber = user['phoneNumber'];
-              final userProfile = UserProfile(
-                email: email,
-                userName: userName,
-                phoneNumber: phoneNumber,
-              );
-              // print('${userProfile.email} ${userProfile.userName}');
-              userProfiles.add(userProfile);
-            }
+            final List<UserData> users = snapshot.data.documents.map((doc) => UserData.fromFirebase(doc)).toList();
 
             // view user profiles
             return Column(
@@ -47,7 +34,9 @@ class Friends extends StatelessWidget {
                   child: ListView(
                     // reverse: true,
                     padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 30.0),
-                    children: userProfiles,
+                    children: List.generate(users.length, (index) {
+                      return UserProfile(userData: users[index]);
+                    }),
                   ),
                 ),
               ],
@@ -60,9 +49,11 @@ class Friends extends StatelessWidget {
 }
 
 class UserProfile extends StatelessWidget {
-  final String userName, email, phoneNumber;
+  final UserData userData;
 
-  UserProfile({this.userName, this.email, this.phoneNumber});
+  UserProfile({
+    this.userData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,47 +63,18 @@ class UserProfile extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.black54,
         elevation: 6.0,
-        child: UserCard(userName: userName, email: email, phoneNumber: phoneNumber),
+        child: UserCard(userData: userData),
       ),
     );
   }
 }
 
-// 두명의 user docId를 합쳐서 roomId로 users Collection에 추가. 이후에 채팅방 목록에 사용됨.
-void createRoomNum(String email) async {
-  final snapshot1 = await _firestore.collection('users').where('email', isEqualTo: email).getDocuments();
-  final snapshot2 = await _firestore.collection('users').where('email', isEqualTo: loggedInUser.email).getDocuments();
-
-  String getId1 = snapshot1.documents.first.documentID;
-  String getId2 = snapshot2.documents.first.documentID;
-  String roomId;
-
-  if (getId1.compareTo(getId2) == -1) {
-    roomId = getId1 + getId2;
-  } else {
-    roomId = getId2 + getId1;
-  }
-
-  print(roomId);
-  print('receiver: $email, sender: ${loggedInUser.email}');
-  _firestore.collection('users').document(getId1).updateData(
-    {
-      "chatRoomId": roomId,
-    },
-  );
-  _firestore.collection('users').document(getId2).updateData(
-    {
-      "chatRoomId": roomId,
-    },
-  );
-}
-
 class UserCard extends StatelessWidget {
-  UserCard({this.email, this.phoneNumber, this.userName});
+  UserCard({
+    this.userData,
+  });
 
-  final String userName;
-  final String email;
-  final String phoneNumber;
+  final UserData userData;
 
   @override
   Widget build(BuildContext context) {
@@ -124,11 +86,13 @@ class UserCard extends StatelessWidget {
         // _firestore.collection('users').document().documentID;
         // final message = _firestore.collection('users').where("userName", isEqualTo: userName).snapshots();
 
-        createRoomNum(email);
-
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChatScreen(userName: userName, email: email)),
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              opponentUserData: userData,
+            ),
+          ),
         );
       },
       child: Padding(
@@ -139,7 +103,7 @@ class UserCard extends StatelessWidget {
             Expanded(
               flex: 1,
               child: Text(
-                '$userName',
+                '${userData.userName}',
                 // textAlign: TextAlign.center,
                 // textDirection: TextDirection.ltr,
                 style: TextStyle(
@@ -156,7 +120,7 @@ class UserCard extends StatelessWidget {
               flex: 3,
               // alignment: Alignment.centerRight,
               child: Text(
-                '$email \n$phoneNumber',
+                '${userData.email} \n${userData.phoneNumber}',
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 18.0,

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flash_chat/Model/user_data.dart';
 import 'package:flash_chat/constants.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 // import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
@@ -85,6 +88,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, TapScreen.id);
                       // Navigator.pushNamedAndRemoveUntil(context, ChatScreen.id, (route) => route.settings.name == WelcomeScreen.id);
                     }
+
+                    QuerySnapshot docs = await Firestore.instance.collection("users").where("email", isEqualTo: email).getDocuments();
+                    // FirebaseUser loggedInUser = await FirebaseAuth.instance.currentUser();
+                    // DocumentSnapshot doc = await Firestore.instance.collection("users").document(loggedInUser.uid).get();
+                    // UserProvider.instance.userData = UserData.fromFirebase(doc);
+
+                    UserProvider.instance.userData = UserData.fromFirebase(docs.documents[0]);
+
                     setState(() {
                       showSpinner = false;
                     });

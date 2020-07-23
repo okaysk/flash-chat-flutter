@@ -1,7 +1,6 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/screens/rooms_screen.dart';
 import 'package:flutter/material.dart';
-import 'chat_screen.dart';
 import 'package:flash_chat/screens/friends_screen.dart';
 
 class TapScreen extends StatelessWidget {

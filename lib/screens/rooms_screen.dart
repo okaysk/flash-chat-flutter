@@ -3,18 +3,17 @@ import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/module/chatRoom.dart';
 
-final _firestore = Firestore.instance;
-
 class RoomsScreen extends StatelessWidget {
   // final some = _firestore.collection('users').orderBy('chatRoomId').snapshots();
   // print(some.documents.length);
-
+  final _firestore = Firestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder(
-          stream: _firestore.collection('users').orderBy('chatRoomId').snapshots(), // chatRoomId가 없는 것도 있어.
+          //stream: _firestore.collection('users').orderBy('chatRoomId').snapshots(), // chatRoomId가 없는 것도 있어.
+          stream: _firestore.collection("messages").snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -24,7 +23,7 @@ class RoomsScreen extends StatelessWidget {
               );
             }
 
-            final snapshot2 = _firestore.collection('messages').orderBy('text').snapshots();
+            //final snapshot2 = _firestore.collection('messages').orderBy('text').snapshots();
             // snapshot2
 
             // final snapshot3 = await _firestore.collection('messages').getDocuments();

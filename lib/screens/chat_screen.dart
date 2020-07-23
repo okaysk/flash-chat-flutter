@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/Model/user_data.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
@@ -9,9 +11,13 @@ FirebaseUser loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
-  final String userName, email;
+  final UserData opponentUserData;
 
-  const ChatScreen({Key key, this.userName, this.email}) : super(key: key);
+  const ChatScreen({
+    Key key,
+    this.opponentUserData,
+  }) : super(key: key);
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -21,11 +27,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
 
   String messageText;
+  String chatRoomId;
 
   @override
   void initState() {
     super.initState();
     getCurrenUser();
+    chatRoomId = UserProvider.instance.createRoomNum(widget.opponentUserData, UserProvider.instance.userData);
   }
 
   void getCurrenUser() async {
@@ -62,7 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               }),
         ],
-        title: Text('⚡️Chat ${widget.email}'), //${widget.email}
+        title: Text('⚡️Chat ${widget.opponentUserData.email}'), //${widget.email}
         backgroundColor: Colors.lightBlueAccent,
       ),
       body: SafeArea(
@@ -71,8 +79,9 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Messagestream(
-              email: widget.email,
-              userName: widget.userName,
+              email: widget.opponentUserData.email,
+              userName: widget.opponentUserData.userName,
+              chatRoomId: chatRoomId,
             ),
             Container(
               decoration: kMessageContainerDecoration,
@@ -96,8 +105,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
-                        'receiver': widget.email,
+                        'receiver': widget.opponentUserData.email,
                         'timestamp': FieldValue.serverTimestamp(), // for order
+                        'chatRoomId': chatRoomId,
                       });
                     },
                     child: Text(
@@ -117,8 +127,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class Messagestream extends StatelessWidget {
   final String email, userName;
+  final String chatRoomId;
 
-  Messagestream({this.email, this.userName});
+  Messagestream({
+    this.email,
+    this.userName,
+    this.chatRoomId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +146,7 @@ class Messagestream extends StatelessWidget {
       // stream: _firestore.collection('messages').where("sender", isEqualTo: userName).orderBy('timestamp').snapshots(),
       // stream: _firestore.collection('messages').where("sender", isEqualTo: email).where("receiver", isEqualTo: loggedInUser.email).orderBy('timestamp').snapshots(),
       // stream: stream4,
-      stream: _firestore.collection('messages').orderBy('timestamp').snapshots(),
+      stream: _firestore.collection('messages').where("chatRoomId", isEqualTo: chatRoomId).orderBy('timestamp').snapshots(),
       // stream: _firestore.collection('messages').where("receiver", isEqualTo: email).orderBy('timestamp').snapshots(),
 
       builder: (context, snapshot) {
