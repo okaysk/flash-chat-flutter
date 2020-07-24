@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/Model/user_data.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/module/chatRoom.dart';
@@ -12,9 +14,9 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: StreamBuilder(
+        child: StreamBuilder<QuerySnapshot>(
           //stream: _firestore.collection('users').orderBy('chatRoomId').snapshots(), // chatRoomId가 없는 것도 있어.
-          stream: _firestore.collection("messages").orderBy('timestamp').snapshots(),
+          stream: _firestore.collection('messages').orderBy('timestamp').snapshots(),
           // stream: _firestore.collection("messages").orderBy('chatRoomId').orderBy('timestamp').snapshots().distinct(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -26,8 +28,6 @@ class ChatList extends StatelessWidget {
             }
 
             //final snapshot2 = _firestore.collection('messages').orderBy('text').snapshots();
-            // snapshot2
-
             // final snapshot3 = await _firestore.collection('messages').getDocuments();
             // print(snapshot3.documents.first.data);
             // for(var doc in snapshot2.documents){
@@ -48,11 +48,31 @@ class ChatList extends StatelessWidget {
                 print('\n\t\t${room['chatRoomId']}\n\t\t${room['text']} ${room['timestamp'].toDate()}');
                 final lastMessage = room['text']; // 최신 데이터
                 final timestamp = room['timestamp'].toDate().toString();
+                var userData;
 
-                // roomList.add(ChatRoom(
-                //   lastMessage: lastMessage,
-                //   timeStamp: timestamp,
-                // ));
+                // snapshots
+                if (UserProvider.instance.userData.email == room['sender']) {
+                  final userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['receiver']).snapshots();
+                  userData = userDataDoc.first;
+                } else {
+                  final userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['sender']).snapshots();
+                  userData = userDataDoc.first;
+                }
+
+                // async랑 StreamBuilder랑 같이 들어가니까 안됨.
+                // if (UserProvider.instance.userData.email == room['sender']) {
+                //   final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['receiver']).getDocuments();
+                //   userData = userDataDoc.documents.first;
+                // } else {
+                //   final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['sender']).getDocuments();
+                //   userData = userDataDoc.documents.first;
+                // }
+
+                roomList.add(ChatRoom(
+                  lastMessage: lastMessage,
+                  timeStamp: timestamp,
+                  userData: userData,
+                ));
               }
               // if(roomId.add(room['chatRoomId']){
 
