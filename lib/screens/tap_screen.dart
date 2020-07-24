@@ -1,4 +1,5 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 import 'package:flash_chat/screens/rooms_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/screens/friends_screen.dart';
@@ -15,7 +16,7 @@ class TapScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.lightBlueAccent,
           // bottom: menu(),
-          title: Text('SK Chat'),
+          title: Text('Hello ${UserProvider.instance.userData.email}'),
         ),
         bottomNavigationBar: menu(),
         body: TabBarView(

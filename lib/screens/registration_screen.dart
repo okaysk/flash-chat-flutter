@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat/Model/user_data.dart';
 import 'package:flash_chat/constants.dart';
+import 'package:flash_chat/provider/user_provider.dart';
 // import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flash_chat/screens/tap_screen.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +129,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     //   'userName': userName,
                     //   'phoneNumber': phoneNumber,
                     // });
+
+                    // 이렇게해야 Register -> TapScreen갈때 login된 상태로 처리됨. Login된 계정 정보를 사용해야되니까.
+                    QuerySnapshot docs = await Firestore.instance.collection("users").where("email", isEqualTo: email).getDocuments();
+                    UserProvider.instance.userData = UserData.fromFirebase(docs.documents[0]);
                   } catch (e) {}
                 },
               ),
