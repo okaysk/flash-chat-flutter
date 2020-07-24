@@ -15,6 +15,7 @@ class Friends extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         // child: SingleChildScrollView( // ListView에서 이미 적용중.
+        // child: StreamBuilder(
         child: StreamBuilder<QuerySnapshot>(
           stream: _firestore.collection('users').orderBy('userName').snapshots(), // for order
           builder: (context, snapshot) {

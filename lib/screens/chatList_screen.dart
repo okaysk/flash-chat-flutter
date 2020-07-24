@@ -3,7 +3,8 @@ import 'package:flash_chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/module/chatRoom.dart';
 
-class RoomsScreen extends StatelessWidget {
+class ChatList extends StatelessWidget {
+  static const String id = 'chagtList_screen';
   // final some = _firestore.collection('users').orderBy('chatRoomId').snapshots();
   // print(some.documents.length);
   final _firestore = Firestore.instance;
@@ -13,7 +14,8 @@ class RoomsScreen extends StatelessWidget {
       body: SafeArea(
         child: StreamBuilder(
           //stream: _firestore.collection('users').orderBy('chatRoomId').snapshots(), // chatRoomId가 없는 것도 있어.
-          stream: _firestore.collection("messages").snapshots(),
+          stream: _firestore.collection("messages").orderBy('timestamp').snapshots(),
+          // stream: _firestore.collection("messages").orderBy('chatRoomId').orderBy('timestamp').snapshots().distinct(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -35,24 +37,37 @@ class RoomsScreen extends StatelessWidget {
             // final some = await _firestore.collection('messages').getDocuments();
             // print(snapshot2.data['1234'][0]['email'].toString());
 
-            List<ChatRoom> roomList = [];
-            final rooms = snapshot.data.documents;
+            List<ChatRoom> roomList = []; // (중복 제거 가능?)
+            // Set<ChatRoom> roomList;
+            final rooms = snapshot.data.documents.reversed;
+            // print('How long it is : ${rooms.length}');
+            Set<String> roomId = {};
             for (var room in rooms) {
-              // receiver쪽만 만들어주기 위해서 if문.
-              if (loggedInUser.email != room['email']) {
-                // final로 하면 안되나 ?
-                // final snapshot2 = _firestore.collection('messages').where(orderBy('text').snapshots();
-                // snapshot2.
+              // 날짜 최신 데이터로 들어온 것 중에서 id 중복을 제거하고.
+              if (roomId.add(room['chatRoomId'])) {
+                print('\n\t\t${room['chatRoomId']}\n\t\t${room['text']} ${room['timestamp'].toDate()}');
+                final lastMessage = room['text']; // 최신 데이터
+                final timestamp = room['timestamp'].toDate().toString();
 
-                // Room 그려주기
-                print(room['chatRoomId']);
-                print(room['userName']);
-                // roomList.add(ChatRoom(email: , lastMessage: , userName: , timeStamp: ,));
+                // roomList.add(ChatRoom(
+                //   lastMessage: lastMessage,
+                //   timeStamp: timestamp,
+                // ));
               }
+              // if(roomId.add(room['chatRoomId']){
+
+              // }
+
+              // roomList.add(ChatRoom())
             }
+
+            // Iterator<ChatRoom> it = roomList.iterator;
 
             return ListView(
               children: roomList,
+              // children: List.generate(roomList.length, (index) {
+              //   return ChatRoom(roomList[index]);
+              // }),
             );
           },
         ),
@@ -60,12 +75,3 @@ class RoomsScreen extends StatelessWidget {
     );
   }
 }
-
-// class ChatStream extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder(
-//       stream: _firestore.collection('messages').orderBy('userName').snapshots(), // for order
-//     );
-//   }
-// }
