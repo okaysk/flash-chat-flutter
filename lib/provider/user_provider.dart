@@ -8,6 +8,8 @@ class UserProvider {
 
   UserData userData;
 
+  List<UserData> friends;
+
 // 두명의 user docId를 합쳐서 roomId로 users Collection에 추가. 이후에 채팅방 목록에 사용됨.
   String createRoomNum(UserData user1, UserData user2) {
     // final snapshot1 = await _firestore.collection('users').where('email', isEqualTo: email).getDocuments();

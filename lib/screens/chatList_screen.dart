@@ -27,13 +27,6 @@ class ChatList extends StatelessWidget {
               );
             }
 
-            //final snapshot2 = _firestore.collection('messages').orderBy('text').snapshots();
-            // final snapshot3 = await _firestore.collection('messages').getDocuments();
-            // print(snapshot3.documents.first.data);
-            // for(var doc in snapshot2.documents){
-            //   print(doc);
-            // }
-
             // final some = await _firestore.collection('messages').getDocuments();
             // print(snapshot2.data['1234'][0]['email'].toString());
 
@@ -48,25 +41,34 @@ class ChatList extends StatelessWidget {
                 print('\n\t\t${room['chatRoomId']}\n\t\t${room['text']} ${room['timestamp'].toDate()}');
                 final lastMessage = room['text']; // 최신 데이터
                 final timestamp = room['timestamp'].toDate().toString();
-                var userData;
+                UserData userData;
 
-                // snapshots
-                if (UserProvider.instance.userData.email == room['sender']) {
-                  final userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['receiver']).snapshots();
-                  userData = userDataDoc.first;
-                } else {
-                  final userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['sender']).snapshots();
-                  userData = userDataDoc.first;
-                }
-
-                // async랑 StreamBuilder랑 같이 들어가니까 안됨.
+                // snapshots (stream 이렇게 받아오면 안돼)
                 // if (UserProvider.instance.userData.email == room['sender']) {
-                //   final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['receiver']).getDocuments();
-                //   userData = userDataDoc.documents.first;
+                //   final Stream<QuerySnapshot> userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['receiver']).snapshots();
+                //   userData = userDataDoc.first;
                 // } else {
-                //   final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['sender']).getDocuments();
-                //   userData = userDataDoc.documents.first;
+                //   final Stream<QuerySnapshot> userDataDoc = _firestore.collection('users').where('email', isEqualTo: room['sender']).snapshots();
+                //   userData = userDataDoc.first;
                 // }
+
+                // async랑 StreamBuilder랑 같이 들어가니까 안됨. (전체를 다 불러오는게 문제. DB를 가능한 불러오지마)
+                if (UserProvider.instance.userData.email == room['sender']) {
+                  print(room['sender']);
+                  // final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['receiver']).getDocuments();
+                  userData = UserProvider.instance.friends.firstWhere((userData) => userData.email == room['receiver'], orElse: () => null);
+                  // userData = userDataDoc.documents.first;
+                } else {
+                  print(room['receiver']);
+
+                  // userData = UserProvider.instance.friends.where((email) => email == room['sender']).toList().first; //exception처리 따로
+                  userData = UserProvider.instance.friends.firstWhere((userData) => userData.email == room['sender'], orElse: () => null);
+                  // final userDataDoc = await _firestore.collection('users').where('email', isEqualTo: room['sender']).getDocuments();
+                  // userData = userDataDoc.documents.first;
+                }
+                // print('User DATA : ${userData.email}');
+                print('USERPROVIDER : ${UserProvider.instance.userData.email}');
+                print('USERDATA $userData');
 
                 roomList.add(ChatRoom(
                   lastMessage: lastMessage,
@@ -74,20 +76,10 @@ class ChatList extends StatelessWidget {
                   userData: userData,
                 ));
               }
-              // if(roomId.add(room['chatRoomId']){
-
-              // }
-
-              // roomList.add(ChatRoom())
             }
-
-            // Iterator<ChatRoom> it = roomList.iterator;
 
             return ListView(
               children: roomList,
-              // children: List.generate(roomList.length, (index) {
-              //   return ChatRoom(roomList[index]);
-              // }),
             );
           },
         ),
@@ -95,3 +87,5 @@ class ChatList extends StatelessWidget {
     );
   }
 }
+
+Future<UserData> test() {}

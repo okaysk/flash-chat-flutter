@@ -10,13 +10,15 @@ class TapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // return MaterialApp( 얘는 App당 1개. 그 이상은 드문 케이스.
+    // Future Builder를 갖고 appBar안에 userDatar가 null인 경우
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.lightBlueAccent,
           // bottom: menu(),
-          title: Text('Hello ${UserProvider.instance.userData.email}'),
+          // title: Text('Hello ${UserProvider.instance.userData.email}'), // 불러오는 동안 null.
+          title: Text('Hello'), // 임시방편.
         ),
         bottomNavigationBar: menu(),
         body: TabBarView(

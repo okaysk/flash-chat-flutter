@@ -26,7 +26,8 @@ class Friends extends StatelessWidget {
               ));
             }
 
-            final List<UserData> users = snapshot.data.documents.map((doc) => UserData.fromFirebase(doc)).toList();
+            // final List<UserData> users = snapshot.data.documents.map((doc) => UserData.fromFirebase(doc)).toList();
+            UserProvider.instance.friends = snapshot.data.documents.map((doc) => UserData.fromFirebase(doc)).toList();
 
             // view user profiles
             return Column(
@@ -35,8 +36,8 @@ class Friends extends StatelessWidget {
                   child: ListView(
                     // reverse: true,
                     padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 30.0),
-                    children: List.generate(users.length, (index) {
-                      return UserProfile(userData: users[index]);
+                    children: List.generate(UserProvider.instance.friends.length, (index) {
+                      return UserProfile(userData: UserProvider.instance.friends[index]);
                     }),
                   ),
                 ),

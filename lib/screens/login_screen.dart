@@ -94,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // DocumentSnapshot doc = await Firestore.instance.collection("users").document(loggedInUser.uid).get();
                     // UserProvider.instance.userData = UserData.fromFirebase(doc);
 
+                    // 바로 위 docs가 아직 data가 없기 때문에 null
                     UserProvider.instance.userData = UserData.fromFirebase(docs.documents[0]);
 
                     setState(() {
